@@ -66,6 +66,7 @@
 #include <qwindow.h>
 #include <qpa/qplatformnativeinterface.h>
 #include <qabstractnativeeventfilter.h>
+#include <qfileinfo.h>
 
 #include "qaxfactory.h"
 #include "qaxbindable.h"
@@ -91,6 +92,7 @@ QT_BEGIN_NAMESPACE
 extern HHOOK qax_hhook;
 
 // in qaxserver.cpp
+extern wchar_t qAxModuleFilename[MAX_PATH];
 extern ITypeLib *qAxTypeLibrary;
 extern QAxFactory *qAxFactory();
 extern unsigned long qAxLock();
@@ -859,9 +861,10 @@ public:
 	    if (mo && !qstricmp(mo->classInfo(mo->indexOfClassInfo("Aggregatable")).value(), "no"))
 		return CLASS_E_NOAGGREGATION;
 	}
-
     	// Make sure a QApplication instance is present (inprocess case)
         if (!qApp) {
+            QFileInfo moduleFilename(QString::fromUtf16((const ushort*)qAxModuleFilename));
+            QCoreApplication::addLibraryPath(moduleFilename.absolutePath());
             qax_ownQApp = true;
             int argc = 0;
             new QApplication(argc, 0);
