@@ -501,6 +501,13 @@ bool QVariantToVARIANT(const QVariant &var, VARIANT &arg, const QByteArray &type
         }
         break;
         
+    case QMetaType::QVariant:
+        {
+            const QVariant qvariant = *(QVariant*)qvar.constData();
+            QVariantToVARIANT(qvariant, arg, qvariant.typeName());
+        }
+        break;
+
     case QVariant::List:
         {
             const QList<QVariant> list = qvar.toList();
